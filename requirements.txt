@@ -1,0 +1,9 @@
+# AI Generative Video Agent - Tested & Pinned Dependencies
+gradio_client>=2.7.0,<=2.7.2
+gradio>=6.30.0,<=6.31.0
+httpx>=0.28.1
+pydantic>=2.10.0,<=2.14.3
+rich>=13.9.0,<=15.0.0
+pytest>=8.0.0,<=9.2.0
+pillow>=11.0.0,<=12.3.0
+tqdm>=4.66.0,<=4.70.1
