@@ -35,6 +35,7 @@ def compose_prompt(
     preset_name: str = "Cinematic Drone",
     camera_motion: str = "Slow Push In (Dolly In)",
     user_negative: str = "",
+    hd_boost: bool = True,
 ) -> Tuple[str, str, float]:
     """
     Compile the user prompt, style preset, and camera motion into an optimal video prompt.
@@ -47,7 +48,7 @@ def compose_prompt(
     camera_directive = get_camera_description(camera_motion)
 
     # Build positive prompt with strict token hierarchy:
-    # [Camera directive] + [Preset prefix] + [User core prompt] + [Preset aesthetic suffix]
+    # [Camera directive] + [Preset prefix] + [User core prompt] + [HD Master tokens] + [Preset aesthetic suffix]
     parts: list[str] = []
     if camera_directive:
         parts.append(camera_directive)
@@ -57,16 +58,29 @@ def compose_prompt(
     else:
         parts.append(clean_user)
 
+    if hd_boost:
+        parts.append(
+            "shot on 35mm Arri Alexa 8k, master cinematography, photorealistic raytraced reflections, "
+            "razor sharp deep focus, fine organic micro-textures, pristine cinema quality, hyper-detailed"
+        )
+
     if preset.suffix:
         parts.append(preset.suffix)
 
     compiled_positive = ", ".join(part.strip() for part in parts if part.strip())
 
-    # Build negative prompt
+    # Build negative prompt with heavy suppression of blur and lowres artifacts
     base_negative = preset.default_negative
+    if hd_boost:
+        base_negative = (
+            f"{base_negative}, 480p, low resolution, blurry, pixelated, jpeg artifacts, "
+            "plastic skin, amateur footage, noisy, distorted, stuttering, flickering, muddy details"
+        )
+
     if user_negative.strip():
         compiled_negative = f"{base_negative}, {user_negative.strip()}"
     else:
         compiled_negative = base_negative
 
-    return compiled_positive, compiled_negative, preset.recommended_guidance
+    recommended_guidance = max(preset.recommended_guidance, 4.0) if hd_boost else preset.recommended_guidance
+    return compiled_positive, compiled_negative, recommended_guidance

@@ -27,11 +27,11 @@ def test_supported_backends():
 
 
 def test_resolution_presets():
-    assert "16:9 Landscape (704x512)" in RESOLUTION_PRESETS
-    assert "9:16 Vertical (512x704)" in RESOLUTION_PRESETS
-    res = RESOLUTION_PRESETS["16:9 Landscape (704x512)"]
-    assert res.width == 704
-    assert res.height == 512
+    assert "720p HD Widescreen (1280x720)" in RESOLUTION_PRESETS
+    assert "720p HD Vertical (720x1280)" in RESOLUTION_PRESETS
+    res = RESOLUTION_PRESETS["720p HD Widescreen (1280x720)"]
+    assert res.width == 1280
+    assert res.height == 720
     assert res.aspect_ratio == "16:9"
 
 
@@ -39,8 +39,8 @@ def test_video_generation_request_validation():
     # Valid request
     req = VideoGenerationRequest(prompt="A futuristic flying car")
     assert req.prompt == "A futuristic flying car"
-    assert req.width == 704
-    assert req.height == 512
+    assert req.width == 1280
+    assert req.height == 720
 
     # Empty prompt fails validation
     with pytest.raises(ValidationError):

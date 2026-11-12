@@ -161,6 +161,7 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
         resolution_choice: str,
         duration_seconds: float,
         guidance_scale: float,
+        hd_boost: bool,
         seed: int,
         randomize_seed: bool,
         negative_prompt: str,
@@ -180,7 +181,7 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
         b_id = backend_mapping.get(backend_choice, BackendID.LTX_VIDEO_DISTILLED)
 
         # Map resolution
-        preset_res = RESOLUTION_PRESETS.get(resolution_choice, RESOLUTION_PRESETS["16:9 Landscape (704x512)"])
+        preset_res = RESOLUTION_PRESETS.get(resolution_choice, RESOLUTION_PRESETS["720p HD Widescreen (1280x720)"])
         width = preset_res.width
         height = preset_res.height
 
@@ -190,6 +191,7 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
             preset_name=preset_name,
             camera_motion=camera_motion,
             user_negative=negative_prompt,
+            hd_boost=hd_boost,
         )
 
         request = VideoGenerationRequest(
@@ -202,6 +204,7 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
             height=height,
             duration_seconds=duration_seconds,
             guidance_scale=guidance_scale,
+            hd_boost=hd_boost,
             seed=int(seed),
             randomize_seed=randomize_seed,
             hf_token=hf_token.strip() if hf_token else None,
@@ -316,10 +319,16 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
                     )
                     resolution_dropdown = gr.Dropdown(
                         choices=list(RESOLUTION_PRESETS.keys()),
-                        value="16:9 Landscape (704x512)",
-                        label="Resolution & Aspect Ratio",
-                        info="Output video dimensions",
+                        value="720p HD Widescreen (1280x720)",
+                        label="Resolution & Quality",
+                        info="Default is True High-Definition 720p widescreen",
                     )
+
+                hd_boost_checkbox = gr.Checkbox(
+                    label="🔥 Ultra HD Photorealism & 8K Cinema Tokens (Recommended)",
+                    value=True,
+                    info="Injects 35mm Arri Alexa lighting, master color grading, and heavy blur suppression",
+                )
 
                 with gr.Accordion("⚙ Advanced Generation Parameters", open=False):
                     with gr.Row():
@@ -334,15 +343,15 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
                         guidance_slider = gr.Slider(
                             minimum=1.0,
                             maximum=10.0,
-                            value=3.0,
+                            value=4.0,
                             step=0.1,
-                            label="Guidance Scale",
-                            info="Prompt adherence strength",
+                            label="Guidance Scale (CFG)",
+                            info="Higher value (4.0-5.0) yields sharper edges and crisp contrast",
                         )
                     negative_input = gr.Textbox(
                         label="Additional Negative Prompt",
                         placeholder="Artifacts to avoid (optional)",
-                        value="worst quality, blurry, jittery, distorted, pixelated, noisy, bad anatomy",
+                        value="worst quality, blurry, jittery, distorted, pixelated, noisy, bad anatomy, 480p, lowres",
                         lines=2,
                     )
                     with gr.Row():
@@ -424,6 +433,7 @@ def create_ui(output_dir: Path = Path("output_videos")) -> gr.Blocks:
                 resolution_dropdown,
                 duration_slider,
                 guidance_slider,
+                hd_boost_checkbox,
                 seed_input,
                 randomize_checkbox,
                 negative_input,

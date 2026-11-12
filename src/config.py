@@ -84,33 +84,40 @@ class ResolutionPreset:
 
 
 RESOLUTION_PRESETS: Dict[str, ResolutionPreset] = {
-    "16:9 Landscape (704x512)": ResolutionPreset(
-        label="16:9 Landscape (704x512)",
+    "720p HD Widescreen (1280x720)": ResolutionPreset(
+        label="720p HD Widescreen (1280x720)",
+        width=1280,
+        height=720,
+        aspect_ratio="16:9",
+        description="True High-Definition 720p widescreen. 3x pixel density of standard SD.",
+    ),
+    "1024x576 Crisp Cinematic HD": ResolutionPreset(
+        label="1024x576 Crisp Cinematic HD",
+        width=1024,
+        height=576,
+        aspect_ratio="16:9",
+        description="Ultra-sharp cinematic widescreen with enhanced micro-details.",
+    ),
+    "720p HD Vertical (720x1280)": ResolutionPreset(
+        label="720p HD Vertical (720x1280)",
+        width=720,
+        height=1280,
+        aspect_ratio="9:16",
+        description="True High-Definition vertical video optimized for smartphones, TikTok, and Reels.",
+    ),
+    "1024x1024 High-Res Square": ResolutionPreset(
+        label="1024x1024 High-Res Square",
+        width=1024,
+        height=1024,
+        aspect_ratio="1:1",
+        description="High-resolution square format for crisp feed posts.",
+    ),
+    "704x512 Fast Preview (SD)": ResolutionPreset(
+        label="704x512 Fast Preview (SD)",
         width=704,
         height=512,
         aspect_ratio="16:9",
-        description="Standard widescreen HD for YouTube, desktop, and cinema.",
-    ),
-    "16:9 Cinema Widescreen (768x432)": ResolutionPreset(
-        label="16:9 Cinema Widescreen (768x432)",
-        width=768,
-        height=432,
-        aspect_ratio="16:9",
-        description="Ultra-wide cinematic aspect ratio.",
-    ),
-    "9:16 Vertical (512x704)": ResolutionPreset(
-        label="9:16 Vertical (512x704)",
-        width=512,
-        height=704,
-        aspect_ratio="9:16",
-        description="Vertical video optimized for TikTok, Reels, and YouTube Shorts.",
-    ),
-    "1:1 Square (512x512)": ResolutionPreset(
-        label="1:1 Square (512x512)",
-        width=512,
-        height=512,
-        aspect_ratio="1:1",
-        description="Square format for Instagram posts and feeds.",
+        description="Standard definition for rapid prototyping (~15s).",
     ),
 }
 
@@ -118,16 +125,17 @@ RESOLUTION_PRESETS: Dict[str, ResolutionPreset] = {
 class VideoGenerationRequest(BaseModel):
     prompt: str = Field(..., min_length=1, description="Text prompt describing the desired video scene")
     negative_prompt: Optional[str] = Field(
-        default="worst quality, blurry, jittery, distorted, pixelated, noisy, bad anatomy, artifacts",
+        default="worst quality, blurry, jittery, distorted, pixelated, noisy, bad anatomy, artifacts, 480p, low resolution",
         description="Negative prompt to suppress undesirable video artifacts",
     )
     preset_name: str = Field(default="Cinematic Drone", description="Built-in prompt engineering preset")
     camera_motion: str = Field(default="Slow Push In (Dolly In)", description="Camera movement dynamic")
     backend_id: BackendID = Field(default=BackendID.LTX_VIDEO_DISTILLED, description="Cloud GPU backend")
-    width: int = Field(default=704, ge=256, le=1280)
-    height: int = Field(default=512, ge=256, le=1280)
+    width: int = Field(default=1280, ge=256, le=1280)
+    height: int = Field(default=720, ge=256, le=1280)
     duration_seconds: float = Field(default=2.0, ge=1.0, le=10.0)
-    guidance_scale: float = Field(default=3.0, ge=1.0, le=15.0)
+    guidance_scale: float = Field(default=4.0, ge=1.0, le=15.0)
+    hd_boost: bool = Field(default=True, description="Inject master cinematography and 8k texture tokens")
     seed: int = Field(default=-1, description="Random seed (-1 for random)")
     randomize_seed: bool = Field(default=True)
     hf_token: Optional[str] = Field(default=None, description="Optional Hugging Face token for extended quotas")

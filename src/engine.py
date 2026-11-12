@@ -238,6 +238,7 @@ class VideoEngine:
             preset_name=request.preset_name,
             camera_motion=request.camera_motion,
             user_negative=request.negative_prompt or "",
+            hd_boost=request.hd_boost,
         )
 
         # Determine seed

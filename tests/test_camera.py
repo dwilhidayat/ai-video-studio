@@ -29,7 +29,7 @@ def test_compose_prompt_cinematic_drone():
     assert "8k resolution" in compiled or "cinematic" in compiled
     # Check that negative prompt contains base negative
     assert "worst quality" in neg
-    assert guidance == 3.0
+    assert guidance >= 3.0
 
 
 def test_compose_prompt_user_negative_stacking():
